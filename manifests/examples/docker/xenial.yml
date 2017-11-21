@@ -1,0 +1,37 @@
+---
+name: ubuntu-{system.release}-{system.architecture}:latest
+provider:
+  name: docker
+  labels:
+    summary: Ubuntu {system.release} {system.architecture}
+    description: Base Ubuntu docker container image.
+    distribution-scope: public
+  dockerfile:
+    - CMD /bin/bash
+bootstrapper:
+  workspace: /tmp/
+  variant: minbase
+system:
+  release: xenial
+  architecture: amd64
+  bootloader: none
+  charmap: UTF-8
+  locale: en_US
+  timezone: UTC
+volume:
+  backing: folder
+  partitions:
+    type: none
+    root:
+      filesystem: ext4
+      size: 1GiB
+plugins:
+  minimize_size:
+    apt:
+      autoclean: true
+      languages: [none]
+      gzip_indexes: true
+      autoremove_suggests: true
+    dpkg:
+      locales: []
+      exclude_docs: true
