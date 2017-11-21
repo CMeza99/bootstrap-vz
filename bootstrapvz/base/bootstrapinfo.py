@@ -29,7 +29,12 @@ class BootstrapInformation(object):
         self.volume = load_volume(self.manifest.volume, manifest.system['bootloader'])
 
         # The default apt mirror
-        self.apt_mirror = self.manifest.packages.get('mirror', 'http://deb.debian.org/debian/')
+        from bootstrapvz.common.releases import get_release
+        release = get_release(manifest.system.get('release', None))
+        if release.distro == 'ubuntu':
+            self.apt_mirror = self.manifest.packages.get('mirror', 'http://archive.ubuntu.com/ubuntu/')
+        else:
+            self.apt_mirror = self.manifest.packages.get('mirror', 'http://deb.debian.org/debian/')
 
         # The default apt security mirror
         self.apt_security = self.manifest.packages.get('security', 'http://security.debian.org/')

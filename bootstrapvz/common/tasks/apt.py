@@ -63,8 +63,17 @@ class AddDefaultSources(Task):
         info.source_lists.add('main', 'deb     {apt_mirror} {system.release} ' + components)
         if include_src:
             info.source_lists.add('main', 'deb-src {apt_mirror} {system.release} ' + components)
-        if info.manifest.release != sid and info.manifest.release >= wheezy:
-            info.source_lists.add('main', 'deb     {apt_security} {system.release}/updates ' + components)
+        from bootstrapvz.common.releases import get_release
+        release = get_release(info.manifest.system.get('release', None))
+        if release.distro == 'ubuntu':
+            info.source_lists.add('main', 'deb     http://security.ubuntu.com/ubuntu/  {system.release}-security ' + components)
+            if include_src:
+                info.source_lists.add('main', 'deb-src http://security.ubuntu.com/ubuntu/  {system.release}-security ' + components)
+            info.source_lists.add('main', 'deb     {apt_mirror} {system.release}-updates ' + components)
+            if include_src:
+                info.source_lists.add('main', 'deb-src {apt_mirror} {system.release}-updates ' + components)
+        elif info.manifest.release != sid and info.manifest.release >= wheezy:
+            info.source_lists.add('main', 'deb     http://security.debian.org/  {system.release}/updates ' + components)
             if include_src:
                 info.source_lists.add('main', 'deb-src {apt_security} {system.release}/updates ' + components)
             info.source_lists.add('main', 'deb     {apt_mirror} {system.release}-updates ' + components)
