@@ -1,9 +1,10 @@
 
 
 class _Release(object):
-    def __init__(self, codename, version):
+    def __init__(self, codename, version, distro='debian'):
         self.codename = codename
         self.version = version
+        self.distro = distro
 
     def __cmp__(self, other):
         return self.version - other.version
@@ -25,7 +26,7 @@ class _ReleaseAlias(_Release):
     def __init__(self, alias, release):
         self.alias = alias
         self.release = release
-        super(_ReleaseAlias, self).__init__(self.release.codename, self.release.version)
+        super(_ReleaseAlias, self).__init__(self.release.codename, self.release.version, self.release.distro)
 
     def __str__(self):
         return self.alias
@@ -52,6 +53,10 @@ unstable = _ReleaseAlias('unstable', sid)
 testing = _ReleaseAlias('testing', buster)
 stable = _ReleaseAlias('stable', stretch)
 oldstable = _ReleaseAlias('oldstable', jessie)
+
+bionic = _Release('bionic', 18.04, 'ubuntu')
+xenial = _Release('xenial', 16.04, 'ubuntu')
+trusty = _Release('trusy', 14.04, 'ubuntu')
 
 
 def get_release(release_name):
