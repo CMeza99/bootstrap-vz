@@ -17,3 +17,12 @@ buster: |
 sid: |
   auto eth0
   iface eth0 inet dhcp
+trusty: |
+  auto eth0
+  iface eth0 inet dhcp
+xenial: |
+  auto ens3
+  iface ens3 inet dhcp
+bionic: |
+  auto ens3
+  iface ens3 inet dhcp
