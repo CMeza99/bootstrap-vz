@@ -1,0 +1,40 @@
+---
+name: ubuntu-{system.release}-{system.architecture}-{%y}{%m}{%d}
+provider:
+  name: virtualbox
+  guest_additions: /usr/share/virtualbox/VBoxGuestAdditions.iso
+bootstrapper:
+  workspace: /tmp
+  variant: minbase
+system:
+  release: xenial
+  architecture: amd64
+  bootloader: grub
+  charmap: UTF-8
+  hostname: localhost
+  locale: C.UTF-8
+  timezone: UTC
+volume:
+  backing: vmdk
+  partitions:
+    type: msdos
+    boot:
+      filesystem: ext2
+      size: 64MiB
+    root:
+      filesystem: ext4
+      size: 18560MiB
+    swap:
+      size: 128MiB
+packages: {}
+plugins:
+  minimize_size:
+    apt:
+      autoclean: true
+      languages: [none]
+      gzip_indexes: true
+      autoremove_suggests: true
+    dpkg:
+      locales: []
+      exclude_docs: true
+  vagrant: {}
