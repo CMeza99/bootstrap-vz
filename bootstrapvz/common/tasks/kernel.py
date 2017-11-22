@@ -11,8 +11,13 @@ class AddDKMSPackages(Task):
     @classmethod
     def run(cls, info):
         info.packages.add('dkms')
-        kernel_pkg_arch = {'i386': '686-pae', 'amd64': 'amd64'}[info.manifest.system['architecture']]
-        info.packages.add('linux-headers-' + kernel_pkg_arch)
+        from bootstrapvz.common.releases import get_release
+        release = get_release(info.manifest.system.get('release', None))
+        if release.distro == 'ubuntu':
+            info.packages.add('linux-headers-generic')
+        else:
+            kernel_pkg_arch = {'i386': '686-pae', 'amd64': 'amd64'}[info.manifest.system['architecture']]
+            info.packages.add('linux-headers-' + kernel_pkg_arch)
 
 
 class UpdateInitramfs(Task):

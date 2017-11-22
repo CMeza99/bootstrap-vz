@@ -30,13 +30,20 @@ class AddGuestAdditionsPackages(Task):
         info.packages.add('build-essential')
         info.packages.add('dkms')
 
-        kernel_headers_pkg = 'linux-headers-'
+        from bootstrapvz.common.releases import get_release
+        release = get_release(info.manifest.system.get('release', None))
         if info.manifest.system['architecture'] == 'i386':
             arch = 'i686'
-            kernel_headers_pkg += '686-pae'
         else:
             arch = 'x86_64'
-            kernel_headers_pkg += 'amd64'
+        if release.distro == 'ubuntu':
+            kernel_headers_pkg = 'linux-headers-generic'
+        else:
+            kernel_headers_pkg = 'linux-headers-'
+            if info.manifest.system['architecture'] == 'i386':
+                kernel_headers_pkg += '686-pae'
+            else:
+                kernel_headers_pkg += 'amd64'
         info.packages.add(kernel_headers_pkg)
         info.kernel = {
             'arch': arch,

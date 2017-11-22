@@ -10,3 +10,9 @@ buster:
   amd64: linux-image-amd64
 sid:
   amd64: linux-image-amd64
+trusty:
+  amd64: linux-image-generic
+xenial:
+  amd64: linux-image-generic
+bionic:
+  amd64: linux-image-generic
