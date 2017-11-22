@@ -17,6 +17,9 @@ properties:
         - testing
         - sid
         - unstable
+        - trusty
+        - xenial
+        - bionic
   plugins:
     type: object
     properties:
