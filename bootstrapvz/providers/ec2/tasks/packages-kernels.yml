@@ -12,3 +12,10 @@ stretch:
 sid:
   amd64: linux-image-amd64
   i386: linux-image-686-pae
+trusty:
+  amd64: linux-image-aws
+  i386: linux-image-aws
+xenial:
+  amd64: linux-image-aws
+bionic:
+  amd64: linux-image-virtual
