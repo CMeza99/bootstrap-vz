@@ -28,7 +28,7 @@ volume:
       size: 128MiB
 packages:
   install:
-    - update-initramfs
+    - initramfs-tools
 plugins:
   minimize_size:
     apt:
