@@ -53,7 +53,7 @@ class InstallGuestAdditions(Task):
     def run(cls, info):
         from bootstrapvz.common.tools import log_call, log_check_call
         for line in log_check_call(['chroot', info.root, 'apt-cache', 'show', info.kernel['headers_pkg']]):
-            key, value = line.split(':')
+            key, value = line.split(':', 1)
             if key.strip() == 'Depends':
                 kernel_version = value.strip().split('linux-headers-')[-1]
                 break
