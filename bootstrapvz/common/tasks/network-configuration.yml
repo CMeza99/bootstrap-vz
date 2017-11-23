@@ -21,8 +21,8 @@ trusty: |
   auto eth0
   iface eth0 inet dhcp
 xenial: |
-  auto ens3
-  iface ens3 inet dhcp
+  auto eth0
+  iface eth0 inet dhcp
 bionic: |
-  auto ens3
-  iface ens3 inet dhcp
+  auto eth0
+  iface eth0 inet dhcp
