@@ -18,4 +18,4 @@ trusty:
 xenial:
   amd64: linux-image-aws
 bionic:
-  amd64: linux-image-virtual
+  amd64: linux-image-aws
