@@ -1,0 +1,50 @@
+---
+name: ubuntu-qcow2-example
+provider:
+  name: kvm
+  virtio_modules:
+    - virtio_pci
+    - virtio_blk
+    - virtio_net
+    - virtio_ballon
+bootstrapper:
+  include_packages:
+    - initramfs-tools
+    - iproute2
+    - iputils-ping
+    - isc-dhcp-client
+    - isc-dhcp-common
+    - net-tools
+    - netbase
+    - resolvconf
+    - sudo
+    - udev
+  variant: minbase
+  workspace: /tmp
+system:
+  release: xenial
+  architecture: amd64
+  bootloader: grub
+  charmap: UTF-8
+  locale: en_US
+  timezone: UTC
+volume:
+  backing: qcow2
+  partitions:
+    type: gpt
+    root:
+      filesystem: ext4
+      size: 1GB
+packages: {}
+plugins:
+  root_password:
+    password: test
+  minimize_size:
+    apt:
+      autoclean: true
+      languages: [none]
+      gzip_indexes: true
+      autoremove_suggests: true
+    dpkg:
+      locales: []
+      exclude_docs: true
