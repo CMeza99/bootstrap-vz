@@ -103,8 +103,11 @@ def get_network_group(manifest):
        ):
         # minbase has no networking
         return []
-    group = [network.ConfigureNetworkIF,
-             network.RemoveDNSInfo]
+    from bootstrapvz.common.releases import get_release
+    release = get_release(manifest.system.get('release', None))
+    group = [network.ConfigureNetworkIF]
+    if release.distro == 'debian':
+        group.append(network.RemoveDNSInfo)
     if manifest.system.get('hostname', False):
         group.append(network.SetHostname)
     else:
