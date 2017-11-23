@@ -4,6 +4,17 @@ provider:
   name: virtualbox
   guest_additions: /usr/share/virtualbox/VBoxGuestAdditions.iso
 bootstrapper:
+  include_packages:
+    - initramfs-tools
+    - iproute2
+    - iputils-ping
+    - isc-dhcp-client
+    - isc-dhcp-common
+    - net-tools
+    - netbase
+    - resolvconf
+    - sudo
+    - udev
   workspace: /tmp
   variant: minbase
 system:
@@ -12,7 +23,7 @@ system:
   bootloader: grub
   charmap: UTF-8
   hostname: localhost
-  locale: C.UTF-8
+  locale: C
   timezone: UTC
 volume:
   backing: vmdk
@@ -20,16 +31,16 @@ volume:
     type: msdos
     boot:
       filesystem: ext2
-      size: 64MiB
+      size: 128MiB
     root:
       filesystem: ext4
-      size: 18560MiB
+      size: 1792MiB
     swap:
       size: 128MiB
-packages:
-  install:
-    - initramfs-tools
+packages: {}
 plugins:
+  root_password:
+    password: test
   minimize_size:
     apt:
       autoclean: true
