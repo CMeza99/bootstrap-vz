@@ -109,3 +109,16 @@ class AddTaskselStandardPackages(Task):
         tasksel_packages = log_check_call(['chroot', info.root, 'tasksel', '--task-packages', 'standard'])
         for pkg in tasksel_packages:
             info.packages.add(pkg)
+
+
+class AddTaskselTasks(Task):
+    description = 'Adding tasksel task packages'
+    phase = phases.package_installation
+    predecessors = [apt.AptUpdate]
+    successors = [InstallPackages]
+
+    @classmethod
+    def run(cls, info):
+        tasks = info.manifest.packages.get('tasksel', [])
+        for task in tasks:
+            info.packages.add('task-' + task)

@@ -80,6 +80,13 @@ properties:
             - pattern: ^[^/]+(/[^/]+)?$
             - $ref: '#/definitions/absolute_path'
         minItems: 1
+      tasksel:
+        type: array
+        items:
+          anyOf:
+            - pattern: ^[^/]+(/[^/]+)?$
+            - $ref: '#/definitions/absolute_path'
+        minItems: 1
       install_standard: {type: boolean}
       mirror:
         type: string

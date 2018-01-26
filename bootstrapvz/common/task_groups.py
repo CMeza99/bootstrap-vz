@@ -136,6 +136,8 @@ def get_apt_group(manifest):
         group.append(packages.AddManifestPackages)
     if manifest.packages.get('install_standard', False):
         group.append(packages.AddTaskselStandardPackages)
+    if manifest.packages.get('tasksel', []):
+        group.append(packages.AddTaskselTasks)
     return group
 
 
