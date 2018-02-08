@@ -54,15 +54,24 @@ stable = _ReleaseAlias('stable', stretch)
 oldstable = _ReleaseAlias('oldstable', jessie)
 
 
-def get_release(release_name):
-    """Normalizes the release codenames
-    This allows tasks to query for release codenames rather than 'stable', 'unstable' etc.
-    """
-    from . import releases
-    release = getattr(releases, release_name, None)
-    if release is None or not isinstance(release, _Release):
-        raise UnknownReleaseException('The release `{name}\' is unknown'.format(name=release))
-    return release
+def get_release(release_name=None, distro_name=None):
+    from tools import config_get, rel_path
+    release_map = config_get(rel_path(__file__, 'release-map.yml'), distro_name)
+    distro_names = distro_name if distro_name else release_map.keys()
+
+    for distro_name in distro_names:
+        release_info = release_map[distro_name].get(release_name, None)
+        if release_info:
+            break
+
+    if type(release_info) is dict:
+        if 'alias' in release_info:
+            return _ReleaseAlias(release_name, get_release(release_info['alias']))
+
+    if release_info is None:
+        raise UnknownReleaseException(
+            'The release `{name}\' is unknown'.format(name=release_name))
+    return _Release(release_name, release_info)
 
 
 class UnknownReleaseException(Exception):

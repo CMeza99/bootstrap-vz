@@ -111,9 +111,12 @@ def load_data(path):
         raise Exception('Unrecognized extension: {ext}'.format(ext=extension))
 
 
-def config_get(path, config_path):
+def config_get(path, config_keys):
     config = load_data(path)
-    for key in config_path:
+    if not config_keys:
+        config_keys = []
+    # crawl the config tree
+    for key in config_keys:
         config = config.get(key)
     return config
 
