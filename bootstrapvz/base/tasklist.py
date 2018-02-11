@@ -1,8 +1,9 @@
 """The tasklist module contains the TaskList class.
 """
 
-from bootstrapvz.common.exceptions import TaskListError
 import logging
+from bootstrapvz.common.exceptions import TaskListError
+
 log = logging.getLogger(__name__)
 
 
@@ -26,7 +27,8 @@ class TaskList(object):
         # We pass in the modules which the manifest has already loaded in order
         # to support third-party plugins, which are not in the bootstrapvz package
         # and therefore wouldn't be discovered.
-        all_tasks = set(get_all_tasks([info.manifest.modules['provider']] + info.manifest.modules['plugins']))
+        all_tasks = set(
+            get_all_tasks([info.manifest.modules['provider']] + info.manifest.modules['plugins']))
         # Create a list for us to run
         task_list = create_list(self.tasks, all_tasks)
         # Output the tasklist
@@ -77,8 +79,7 @@ def create_list(taskset, all_tasks):
                'That list is not a superset of the tasks required for bootstrapping. '
                'The tasks that were not found are: {tasks} '
                '(This is an error in the code and not the manifest, please report this issue.)'
-               .format(tasks=', '.join(map(str, taskset - all_tasks)))
-               )
+               .format(tasks=', '.join(map(str, taskset - all_tasks))))
         raise TaskListError(msg)
     # Create a graph over all tasks by creating a map of each tasks successors
     graph = {}
@@ -129,7 +130,8 @@ def get_all_tasks(loaded_modules):
     import os.path
     import bootstrapvz
     from bootstrapvz.common.tools import rel_path
-    module_paths = set([(rel_path(bootstrapvz.__file__, 'common/tasks'), 'bootstrapvz.common.tasks.')])
+    module_paths = set([(rel_path(bootstrapvz.__file__, 'common/tasks'),
+                         'bootstrapvz.common.tasks.')])
 
     for module in loaded_modules:
         module_path = os.path.dirname(module.__file__)
@@ -137,7 +139,8 @@ def get_all_tasks(loaded_modules):
         module_paths.add((module_path, module_prefix))
 
     providers = rel_path(bootstrapvz.__file__, 'providers')
-    for module_loader, module_name, ispkg in pkgutil.iter_modules([providers, 'bootstrapvz.providers']):
+    for module_loader, module_name, ispkg in pkgutil.iter_modules(
+        [providers, 'bootstrapvz.providers']):
         module_path = os.path.join(module_loader.path, module_name)
         # The prefix param seems to do nothing, so we prefix the module name ourselves
         module_prefix = 'bootstrapvz.providers.{}.'.format(module_name)
@@ -160,6 +163,7 @@ def get_all_tasks(loaded_modules):
     def is_task(obj):
         from task import Task
         return issubclass(obj, Task) and obj is not Task
+
     return filter(is_task, classes)  # Only return classes that are tasks
 
 
@@ -180,6 +184,7 @@ def get_all_classes(path=None, prefix='', excludes=[]):
     def walk_error(module_name):
         if not any(map(lambda excl: module_name.startswith(excl), excludes)):
             raise TaskListError('Unable to inspect module ' + module_name)
+
     walker = pkgutil.walk_packages([path], prefix, walk_error)
     for _, module_name, _ in walker:
         if any(map(lambda excl: module_name.startswith(excl), excludes)):
@@ -189,7 +194,7 @@ def get_all_classes(path=None, prefix='', excludes=[]):
         for class_name, obj in classes:
             # We only want classes that are defined in the module, and not imported ones
             if obj.__module__ == module_name:
-                    yield obj
+                yield obj
 
 
 def check_ordering(task):
@@ -207,27 +212,30 @@ def check_ordering(task):
         # lies before the phase of a successor, log a warning if it lies after.
         if task.phase > successor.phase:
             msg = ("The task {task} is specified as running before {other}, "
-                   "but its phase '{phase}' lies after the phase '{other_phase}'"
-                   .format(task=task, other=successor, phase=task.phase, other_phase=successor.phase))
+                   "but its phase '{phase}' lies after the phase '{other_phase}'".format(
+                       task=task, other=successor, phase=task.phase, other_phase=successor.phase))
             raise TaskListError(msg)
         if task.phase < successor.phase:
-            log.warn("The task {task} is specified as running before {other} "
-                     "although its phase '{phase}' already lies before the phase '{other_phase}' "
-                     "(or the task has been placed in the wrong phase)"
-                     .format(task=task, other=successor, phase=task.phase, other_phase=successor.phase))
+            log.warn("The task %s is specified as running before %s "
+                     "although its phase '%s' already lies before the phase '%s' "
+                     "(or the task has been placed in the wrong phase)", task, successor,
+                     task.phase, successor.phase)
     for predecessor in task.predecessors:
         # Run through all successors and throw an error if the phase of the task
         # lies after the phase of a predecessor, log a warning if it lies before.
         if task.phase < predecessor.phase:
             msg = ("The task {task} is specified as running after {other}, "
-                   "but its phase '{phase}' lies before the phase '{other_phase}'"
-                   .format(task=task, other=predecessor, phase=task.phase, other_phase=predecessor.phase))
+                   "but its phase '{phase}' lies before the phase '{other_phase}'".format(
+                       task=task,
+                       other=predecessor,
+                       phase=task.phase,
+                       other_phase=predecessor.phase))
             raise TaskListError(msg)
         if task.phase > predecessor.phase:
-            log.warn("The task {task} is specified as running after {other} "
-                     "although its phase '{phase}' already lies after the phase '{other_phase}' "
-                     "(or the task has been placed in the wrong phase)"
-                     .format(task=task, other=predecessor, phase=task.phase, other_phase=predecessor.phase))
+            log.warn("The task %s is specified as running after %s "
+                     "although its phase '%s' already lies after the phase '%s' "
+                     "(or the task has been placed in the wrong phase)", task, predecessor,
+                     task.phase, predecessor.phase)
 
 
 def strongly_connected_components(graph):

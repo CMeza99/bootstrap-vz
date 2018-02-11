@@ -1,8 +1,8 @@
-from abstract import AbstractPartitionMap
+from bootstrapvz.common.tools import log_check_call
+from .abstract import AbstractPartitionMap
 from ..exceptions import PartitionError
 from ..partitions.msdos import MSDOSPartition
 from ..partitions.msdos_swap import MSDOSSwapPartition
-from bootstrapvz.common.tools import log_check_call
 
 
 class MSDOSPartitionMap(AbstractPartitionMap):
@@ -23,13 +23,15 @@ class MSDOSPartitionMap(AbstractPartitionMap):
 
         # Returns the last partition unless there is none
         def last_partition():
-            return self.partitions[-1] if len(self.partitions) > 0 else None
+            return self.partitions[-1] if self.partitions else None
 
         # The boot and swap partitions are optional
         if 'boot' in data:
-            self.boot = MSDOSPartition(Sectors(data['boot']['size'], sector_size),
-                                       data['boot']['filesystem'], data['boot'].get('format_command', None),
-                                       data['boot'].get('mountopts', None), 'boot', last_partition())
+            self.boot = MSDOSPartition(
+                Sectors(data['boot']['size'],
+                        sector_size), data['boot']['filesystem'], data['boot'].get(
+                            'format_command', None), data['boot'].get('mountopts', None), 'boot',
+                last_partition())
             self.partitions.append(self.boot)
 
         # Offset all partitions by 1 sector.
@@ -38,16 +40,18 @@ class MSDOSPartitionMap(AbstractPartitionMap):
         partition_gap = Sectors(1, sector_size)
 
         if 'swap' in data:
-            self.swap = MSDOSSwapPartition(Sectors(data['swap']['size'], sector_size), last_partition())
+            self.swap = MSDOSSwapPartition(
+                Sectors(data['swap']['size'], sector_size), last_partition())
             if self.swap.previous is not None:
                 # No need to pad if this is the first partition
                 self.swap.pad_start += partition_gap
                 self.swap.size -= partition_gap
             self.partitions.append(self.swap)
 
-        self.root = MSDOSPartition(Sectors(data['root']['size'], sector_size),
-                                   data['root']['filesystem'], data['root'].get('format_command', None),
-                                   data['root'].get('mountopts', None), 'root', last_partition())
+        self.root = MSDOSPartition(
+            Sectors(data['root']['size'], sector_size), data['root']['filesystem'],
+            data['root'].get('format_command', None), data['root'].get('mountopts', None), 'root',
+            last_partition())
         if self.root.previous is not None:
             self.root.pad_start += partition_gap
             self.root.size -= partition_gap
@@ -58,7 +62,8 @@ class MSDOSPartitionMap(AbstractPartitionMap):
         # And anyhow - we should go with GPT...
         for partition in data:
             if partition not in ["boot", "swap", "root", "type"]:
-                raise PartitionError("If you want to have additional partitions please use GPT partition scheme")
+                raise PartitionError(
+                    "If you want to have additional partitions please use GPT partition scheme")
 
         # Mark boot as the boot partition, or root, if boot does not exist
         getattr(self, 'boot', self.root).flags.append('boot')
@@ -87,8 +92,8 @@ class MSDOSPartitionMap(AbstractPartitionMap):
         volume = event.volume
         # Disk alignment still plays a role in virtualized environment,
         # but I honestly have no clue as to what best practice is here, so we choose 'none'
-        log_check_call(['parted', '--script', '--align', 'none', volume.device_path,
-                        '--', 'mklabel', 'msdos'])
+        log_check_call(
+            ['parted', '--script', '--align', 'none', volume.device_path, '--', 'mklabel', 'msdos'])
         # Create the partitions
         for partition in self.partitions:
             partition.create(volume)

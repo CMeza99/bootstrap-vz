@@ -1,4 +1,4 @@
-from base import BasePartition
+from .base import BasePartition
 
 
 class UnformattedPartition(BasePartition):
@@ -7,10 +7,23 @@ class UnformattedPartition(BasePartition):
     """
 
     # The states for our state machine. It can only be mapped, not mounted.
-    events = [{'name': 'create', 'src': 'nonexistent', 'dst': 'unmapped'},
-              {'name': 'map', 'src': 'unmapped', 'dst': 'mapped'},
-              {'name': 'unmap', 'src': 'mapped', 'dst': 'unmapped'},
-              ]
+    events = [
+        {
+            'name': 'create',
+            'src': 'nonexistent',
+            'dst': 'unmapped'
+        },
+        {
+            'name': 'map',
+            'src': 'unmapped',
+            'dst': 'mapped'
+        },
+        {
+            'name': 'unmap',
+            'src': 'mapped',
+            'dst': 'unmapped'
+        },
+    ]
 
     def __init__(self, size, previous):
         """

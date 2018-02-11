@@ -1,5 +1,3 @@
-
-
 class SourceLists(object):
     """Represents a list of sources lists for apt
     """
@@ -56,14 +54,14 @@ class Source(object):
         # The format is taken from `man sources.list`
         # or: http://manpages.debian.org/cgi-bin/man.cgi?sektion=5&query=sources.list&apropos=0&manpath=sid&locale=en
         import re
-        regexp = re.compile('^(?P<type>deb|deb-src)\s+'
-                            '(\[\s*(?P<options>.+\S)?\s*\]\s+)?'
-                            '(?P<uri>\S+)\s+'
-                            '(?P<distribution>\S+)'
-                            '(\s+(?P<components>.+\S))?\s*$')
+        regexp = re.compile(r'^(?P<type>deb|deb-src)\s+'
+                            r'(\[\s*(?P<options>.+\S)?\s*\]\s+)?'
+                            r'(?P<uri>\S+)\s+'
+                            r'(?P<distribution>\S+)'
+                            r'(\s+(?P<components>.+\S))?\s*$')
         match = regexp.match(line).groupdict()
         if match is None:
-            from exceptions import SourceError
+            from .exceptions import SourceError
             raise SourceError('Unable to parse source line: ' + line)
         self.type = match['type']
         self.options = []
@@ -82,14 +80,16 @@ class Source(object):
         :rtype: str
         """
         options = ''
-        if len(self.options) > 0:
+        if self.options:
             options = ' [{options}]'.format(options=' '.join(self.options))
 
         components = ''
-        if len(self.components) > 0:
+        if self.components:
             components = ' {components}'.format(components=' '.join(self.components))
 
-        return ('{type}{options} {uri} {distribution}{components}'
-                .format(type=self.type, options=options,
-                        uri=self.uri, distribution=self.distribution,
-                        components=components))
+        return ('{type}{options} {uri} {distribution}{components}'.format(
+            type=self.type,
+            options=options,
+            uri=self.uri,
+            distribution=self.distribution,
+            components=components))
