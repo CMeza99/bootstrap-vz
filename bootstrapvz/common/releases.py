@@ -1,6 +1,9 @@
+from abc import ABCMeta
 
 
 class _Release(object):
+    __metaclass__ = ABCMeta
+
     def __init__(self, codename, version):
         self.codename = codename
         self.version = version
@@ -20,6 +23,25 @@ class _Release(object):
         for key in state:
             self.__dict__[key] = state[key]
 
+    # TODO: add metaproperty isDebian
+
+
+class ReleaseDebian(_Release):
+    pass
+
+
+class ReleaseUbuntu(_Release):
+    def __init__(self, codename, version, debian):
+        self.debian = debian
+        super(ReleaseUbuntu, self).__init__(codename, version)
+
+    def __cmp__(self, other):
+        if isinstance(other, ReleaseDebian):
+            return self.debian.version - other.version
+        elif not isinstance(other, ReleaseUbuntu):
+            raise UnknownReleaseException('Unable to compare release with {}'.format(type(other)))
+        return self.version - other.version
+
 
 class _ReleaseAlias(_Release):
     def __init__(self, alias, release):
@@ -31,22 +53,22 @@ class _ReleaseAlias(_Release):
         return self.alias
 
 
-sid = _Release('sid', 11)
-buster = _Release('buster', 10)
-stretch = _Release('stretch', 9)
-jessie = _Release('jessie', 8)
-wheezy = _Release('wheezy', 7)
-squeeze = _Release('squeeze', 6.0)
-lenny = _Release('lenny', 5.0)
-etch = _Release('etch', 4.0)
-sarge = _Release('sarge', 3.1)
-woody = _Release('woody', 3.0)
-potato = _Release('potato', 2.2)
-slink = _Release('slink', 2.1)
-hamm = _Release('hamm', 2.0)
-bo = _Release('bo', 1.3)
-rex = _Release('rex', 1.2)
-buzz = _Release('buzz', 1.1)
+sid = ReleaseDebian('sid', 11)
+buster = ReleaseDebian('buster', 10)
+stretch = ReleaseDebian('stretch', 9)
+jessie = ReleaseDebian('jessie', 8)
+wheezy = ReleaseDebian('wheezy', 7)
+squeeze = ReleaseDebian('squeeze', 6.0)
+lenny = ReleaseDebian('lenny', 5.0)
+etch = ReleaseDebian('etch', 4.0)
+sarge = ReleaseDebian('sarge', 3.1)
+woody = ReleaseDebian('woody', 3.0)
+potato = ReleaseDebian('potato', 2.2)
+slink = ReleaseDebian('slink', 2.1)
+hamm = ReleaseDebian('hamm', 2.0)
+bo = ReleaseDebian('bo', 1.3)
+rex = ReleaseDebian('rex', 1.2)
+buzz = ReleaseDebian('buzz', 1.1)
 
 unstable = _ReleaseAlias('unstable', sid)
 testing = _ReleaseAlias('testing', buster)
