@@ -1,0 +1,27 @@
+debian:
+    sid: 11
+    buster: 10
+    stretch: 9
+    jessie: 8
+    wheezy: 7
+    squeeze: 6.0
+    lenny: 5.0
+    etch: 4.0
+    sarge: 3.1
+    woody: 3.0
+    potato: 2.2
+    slink: 2.1
+    hamm: 2.0
+    bo: 1.3
+    rex: 1.2
+    buzz: 1.1
+    unstable:
+        alias: sid
+    testing:
+        alias: buster
+    stable:
+        alias: stretch
+    oldstable:
+        alias: jessie
+    oldoldstable:
+        alias: wheezy

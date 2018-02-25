@@ -3,7 +3,7 @@ from bootstrapvz.common import releases
 
 
 def test_gt():
-    assert releases.wheezy > releases.squeeze
+    assert releases.wheezy > releases.get_release('squeeze')
 
 
 def test_lt():
