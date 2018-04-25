@@ -185,16 +185,18 @@ class DisableDaemonAutostart(Task):
 
     @classmethod
     def run(cls, info):
+        from bootstrapvz.common.releases import get_release
+        release = get_release(info.manifest.system.get('release', None))
+
         rc_policy_path = os.path.join(info.root, 'usr/sbin/policy-rc.d')
         with open(rc_policy_path, 'w') as rc_policy:
-            rc_policy.write(('#!/bin/sh\n'
-                             'exit 101'))
+            rc_policy.write('exit 101')
         os.chmod(rc_policy_path, 0o755)
-        initictl_path = os.path.join(info.root, 'sbin/initctl')
-        with open(initictl_path, 'w') as initctl:
-            initctl.write(('#!/bin/sh\n'
-                           'exit 0'))
-        os.chmod(initictl_path, 0o755)
+        if release.distro == 'debian':
+            initictl_path = os.path.join(info.root, 'sbin/initctl')
+            with open(initictl_path, 'w') as initctl:
+                initctl.write(('#!/bin/sh\n' 'exit 0'))
+            os.chmod(initictl_path, 0o755)
 
 
 class AptUpdate(Task):
@@ -268,5 +270,9 @@ class EnableDaemonAutostart(Task):
 
     @classmethod
     def run(cls, info):
+        from bootstrapvz.common.releases import get_release
+        release = get_release(info.manifest.system.get('release', None))
+
         os.remove(os.path.join(info.root, 'usr/sbin/policy-rc.d'))
-        os.remove(os.path.join(info.root, 'sbin/initctl'))
+        if release.distro == 'debian':
+            os.remove(os.path.join(info.root, 'sbin/initctl'))
