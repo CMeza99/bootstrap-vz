@@ -22,17 +22,26 @@ class GenerateLocale(Task):
     def run(cls, info):
         from ..tools import sed_i
         from ..tools import log_check_call
+        from bootstrapvz.common.releases import get_release
 
+        release = get_release(info.manifest.system.get('release', None))
         lang = '{locale}.{charmap}'.format(locale=info.manifest.system['locale'],
                                            charmap=info.manifest.system['charmap'])
-        locale_str = '{locale}.{charmap} {charmap}'.format(locale=info.manifest.system['locale'],
-                                                           charmap=info.manifest.system['charmap'])
 
-        search = '# ' + locale_str
-        locale_gen = os.path.join(info.root, 'etc/locale.gen')
-        sed_i(locale_gen, search, locale_str)
+        if release.distro == 'ubuntu':
+            log_check_call(['chroot', info.root, 'locale-gen', lang])
 
-        log_check_call(['chroot', info.root, 'locale-gen'])
+        else:
+            locale_str = '{locale}.{charmap} {charmap}'.format(
+                locale=info.manifest.system['locale'],
+                charmap=info.manifest.system['charmap'])
+
+            search = '# ' + locale_str
+            locale_gen = os.path.join(info.root, 'etc/locale.gen')
+            sed_i(locale_gen, search, locale_str)
+
+            log_check_call(['chroot', info.root, 'locale-gen'])
+
         log_check_call(['chroot', info.root,
                         'update-locale', 'LANG=' + lang])
 

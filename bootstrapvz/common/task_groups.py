@@ -147,13 +147,17 @@ security_group = [security.EnableShadowConfig]
 
 
 def get_locale_group(manifest):
+    from bootstrapvz.common.releases import get_release
     from bootstrapvz.common.releases import jessie
+
     group = [
         locale.LocaleBootstrapPackage,
         locale.GenerateLocale,
         locale.SetTimezone,
     ]
-    if manifest.release > jessie:
+
+    release = get_release(manifest.system.get('release', None))
+    if release.distro == 'ubuntu' or manifest.release > jessie:
         group.append(locale.SetLocalTimeLink)
     else:
         group.append(locale.SetLocalTimeCopy)
